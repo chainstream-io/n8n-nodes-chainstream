@@ -2,7 +2,7 @@
 
 # n8n-nodes-chainstream
 
-This is an n8n community node that lets you interact with Chainstream services in your n8n workflows.
+This is an n8n community node that lets you interact with Chainstream real-time blockchain data services in your n8n workflows.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -27,34 +27,35 @@ The Chainstream node requires API key credentials:
 
 The Chainstream node supports the following operations:
 
-### Sign Transaction
-Sign a blockchain transaction using your Chainstream wallet.
+### Get Token Info
+Get detailed information about a token on any supported blockchain.
 
-### Create Wallet 
-Create a new wallet in your Chainstream organization.
+### Search Tokens
+Search for tokens across multiple blockchains with filters.
 
-### Create Wallet Accounts
-Create new accounts within an existing wallet.
+### Get Multiple Tokens
+Retrieve information for multiple tokens in a single request.
 
-### List Wallets
-Get a list of all wallets in your organization.
+### Token Migration Events
+Subscribe to token migration events across chains.
 
 ## Example Usage
 
 To use the Chainstream node:
 
 1. Add your API credentials
-2. Select an operation (e.g. Sign Transaction)
+2. Select an operation (e.g. Get Token Info)
 3. Configure the required parameters:
-   - Organization ID
-   - Transaction type (Ethereum, Solana, or Tron)
-   - Unsigned transaction data
+   - Chain ID
+   - Token address
+   - Search filters (for search operations)
 
-The node will execute the operation and return the results.
+The node will fetch real-time blockchain data and return the results.
 
 ## Error Handling
 
 The node includes comprehensive error handling and will return clear error messages if:
 - Invalid credentials are provided
-- Required parameters are missing
+- Required parameters are missing 
 - The API request fails
+- Rate limits are exceeded
