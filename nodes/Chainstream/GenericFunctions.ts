@@ -6,6 +6,7 @@ import type {
 	ILoadOptionsFunctions,
 	IHttpRequestMethods,
 	IRequestOptions,
+	// IRequestOptions,
 } from 'n8n-workflow';
 
 export async function chainstreamApiRequest(
@@ -34,7 +35,7 @@ export async function chainstreamApiRequest(
 	const options: IRequestOptions = {
 		method,
 		qs: query,
-		uri: uri || `https://${credentials.apiBaseUrl}/v1/${resource}`,
+		uri: uri || `${credentials.apiBaseUrl}/v1/${resource}`,
 		body,
 		json: true,
 	};

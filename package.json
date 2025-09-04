@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-chainstream",
-	"version": "0.0.6",
+	"version": "0.0.24",
 	"description": "Chainstream nodes for n8n",
 	"keywords": [
 		"n8n-community-node-package",
@@ -40,7 +40,8 @@
 			"dist/credentials/ChainstreamApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/Chainstream/Chainstream.node.js"
+			"dist/nodes/Chainstream/Chainstream.node.js",
+			"dist/nodes/Chainstream/ChainstreamTrigger.node.js"
 		]
 	},
 	"devDependencies": {

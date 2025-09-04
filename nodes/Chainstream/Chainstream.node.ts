@@ -1,11 +1,15 @@
 import {
+	IDataObject,
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeConnectionType,
-	NodeOperationError,
 } from 'n8n-workflow';
+import { tokenFields, tokenOperations } from './TokenDescription';
+import { chainstreamApiRequest } from './GenericFunctions';
 
 export class Chainstream implements INodeType {
 	description: INodeTypeDescription = {
@@ -65,39 +69,86 @@ export class Chainstream implements INodeType {
 				],
 				default: 'token',
 			},
+			...tokenOperations,
+			...tokenFields,
 		],
 	};
 
+	methods = {
+		loadOptions: {
+			async getChains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const response = await chainstreamApiRequest.call(
+					this,
+					'GET',
+					'blockchain',
+				);
+
+				for (const chainId of response) {
+					returnData.push({
+						name: chainId,
+						value: chainId,
+					});
+				}
+				return returnData;
+			}
+		}
+	};
+
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
-		const operation = this.getNodeParameter('operation', 0) as string;
-		
-		let authentication = 'apiKey';
-		try {
-			authentication = this.getNodeParameter('authentication', 0) as string;
-		} catch (error) {
-			this.logger.debug('Authentication parameter not found, using default "apiKey" transport');
+		const length = items.length;
+		let responseData;
+		const qs: IDataObject = {};
+		const resource = this.getNodeParameter('resource', 0);
+		const operation = this.getNodeParameter('operation', 0);
+
+	
+		for (let i = 0; i < length; i++) {
+			try {
+				if (resource === 'token') {
+					if (operation === 'get') {
+						const chainId = this.getNodeParameter("chainId", i) as string;
+						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}`, {});
+						responseData = responseData;
+					} else if (operation === 'getMany') {
+						const chainId = this.getNodeParameter("chainId", i) as string;
+						qs.tokenAddresses = this.getNodeParameter('tokenAddresses', i) as string;
+
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/multi`, {}, qs);
+						responseData = responseData;
+					} else if (operation === 'search') {
+						const chains = this.getNodeParameter("chains", i) as string;
+						qs.chains = chains;
+						qs.q = this.getNodeParameter('q', i) as string;
+						qs.limit = this.getNodeParameter('limit', i);
+
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/search`, {}, qs);
+						responseData = responseData;
+					}
+				}
+
+				const executionData = this.helpers.constructExecutionMetaData(
+					this.helpers.returnJsonArray(responseData as IDataObject[]),
+					{ itemData: { item: i } },
+				);
+
+				returnData.push(...executionData);
+			} catch(error) {
+				if (this.continueOnFail()) {
+					const executionErrorData = this.helpers.constructExecutionMetaData(
+						this.helpers.returnJsonArray({ error: error.message }),
+						{ itemData: { item: i } },
+					);
+					returnData.push(...executionErrorData);
+					continue;
+				}
+				throw error;
+			}
 		}
 
-		try {
-			if (authentication === 'apiKey') {
-				// const apiKeyCredentials = await this.getCredentials('chainstreamApi');
-
-			} else {
-			}
-
-
-			switch (operation) {
-				default:
-					throw new NodeOperationError(this.getNode(), `Operation ${operation} not supported`);
-			}
-
-			return [returnData];
-		} catch (error) {
-			throw new NodeOperationError(
-				this.getNode(),
-				`Failed to execute operation: ${(error as Error).message}`,
-			);
-		}
+		return [returnData];
 	}
 }
