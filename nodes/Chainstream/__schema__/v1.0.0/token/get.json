@@ -1,0 +1,12 @@
+{
+    "type": "object",
+    "properties": {
+        "chain": {
+            "type": "string"
+        },
+        "tokenAddress": {
+            "type": "string"
+        }
+    },
+    "version": 1
+}
