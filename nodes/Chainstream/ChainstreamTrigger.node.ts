@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto';
+// import { createHmac } from 'crypto';
 import {
 	type IHookFunctions,
 	type IWebhookFunctions,
@@ -61,11 +61,11 @@ export class ChainstreamTrigger implements INodeType {
 				displayName: 'Trigger On',
 				name: 'topic',
 				type: 'options',
-				default: 'token/migrated',
+				default: 'sol.token.migrated',
 				options: [
 					{
 						name: 'Token Migrated',
-						value: 'token/migrated',
+						value: 'sol.token.migrated',
 					},
 				],
 			},
@@ -85,14 +85,14 @@ export class ChainstreamTrigger implements INodeType {
 	webhookMethods = {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
-				const topic = this.getNodeParameter('topic') as string;
 				const webhookData = this.getWorkflowStaticData('node');
 				const webhookUrl = this.getNodeWebhookUrl('default');
-				const endpoint = '/webhooks';
+				const endpoint = 'webhook/endpoint';
 
-				const { webhooks } = await chainstreamApiRequest.call(this, 'GET', endpoint, {}, { topic });
-				for (const webhook of webhooks) {
-					if (webhook.address === webhookUrl) {
+				const res = await chainstreamApiRequest.call(this, 'GET', endpoint);
+				this.logger.debug('Chainstream node start checkExists method', { res });
+				for (const webhook of res.data) {
+					if (webhook.url === webhookUrl) {
 						webhookData.webhookId = webhook.id;
 						return true;
 					}
@@ -103,17 +103,17 @@ export class ChainstreamTrigger implements INodeType {
 				const webhookUrl = this.getNodeWebhookUrl('default');
 				const topic = this.getNodeParameter('topic') as string;
 				const webhookData = this.getWorkflowStaticData('node');
-				const endpoint = '/webhooks.json';
+				const endpoint = 'webhook/endpoint';
 				const body = {
-					webhook: {
-						topic,
-						address: webhookUrl,
-						format: 'json',
-					},
+					filterTypes: [topic],
+					url: webhookUrl,
+					// format: 'json',
 				};
 
+				this.logger.debug('Chainstream node start create method', { body });
 				const responseData = await chainstreamApiRequest.call(this, 'POST', endpoint, body);
-
+				this.logger.debug('Chainstream node execute create method return result', { responseData });
+				
 				if (responseData.webhook === undefined || responseData.webhook.id === undefined) {
 					// Required data is missing so was not successful
 					return false;
@@ -125,10 +125,12 @@ export class ChainstreamTrigger implements INodeType {
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
 				if (webhookData.webhookId !== undefined) {
-					const endpoint = `/webhooks/${webhookData.webhookId}.json`;
+					const endpoint = `webhook/endpoint/${webhookData.webhookId}`;
+					this.logger.debug('Chainstream node start delete method', { endpoint });
 					try {
 						await chainstreamApiRequest.call(this, 'DELETE', endpoint, {});
 					} catch (error) {
+						this.logger.error('Chainstream node execute delete method error', { error });
 						return false;
 					}
 					delete webhookData.webhookId;
@@ -139,32 +141,32 @@ export class ChainstreamTrigger implements INodeType {
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		const headerData = this.getHeaderData() as IDataObject;
+		// const headerData = this.getHeaderData() as IDataObject;
 		const req = this.getRequestObject();
-		const authentication = this.getNodeParameter('authentication') as string;
-		let secret = '';
+		// const authentication = this.getNodeParameter('authentication') as string;
+		// let secret = '';
 
-		if (authentication === 'apiKey') {
-			const credentials = await this.getCredentials('chainstreamApi');
-			secret = credentials.sharedSecret as string;
-		}
+		// if (authentication === 'apiKey') {
+			// const credentials = await this.getCredentials('chainstreamApi');
+			// secret = credentials.sharedSecret as string;
+		// }
 
-		const topic = this.getNodeParameter('topic') as string;
-		if (
-			headerData['x-hmac-sha256'] !== undefined
-		) {
-			const computedSignature = createHmac('sha256', secret).update(req.rawBody).digest('base64');
+		// const topic = this.getNodeParameter('topic') as string;
+		// if (
+		// 	headerData['x-hmac-sha256'] !== undefined
+		// ) {
+		// 	const computedSignature = createHmac('sha256', secret).update(req.rawBody).digest('base64');
 
-			if (headerData['x-hmac-sha256'] !== computedSignature) {
-				return {};
-			}
+		// 	if (headerData['x-hmac-sha256'] !== computedSignature) {
+		// 		return {};
+		// 	}
 
-            if (topic !== headerData['x-topic']) {
-				return {};
-			}
-		} else {
-			return {};
-		}
+        //     if (topic !== headerData['x-topic']) {
+		// 		return {};
+		// 	}
+		// } else {
+		// 	return {};
+		// }
 		return {
 			workflowData: [this.helpers.returnJsonArray(req.body as IDataObject)],
 		};

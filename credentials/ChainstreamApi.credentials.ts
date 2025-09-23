@@ -76,6 +76,7 @@ export class ChainstreamApi implements ICredentialType {
 					client_secret: credentials.clientSecret,
 					audience: `https://api.dex.chainstream.io`,
 					grant_type: 'client_credentials',
+					scope: 'webhook.read webhook.write',
 				},
 				headers: {
 					'Content-Type': 'application/json',
