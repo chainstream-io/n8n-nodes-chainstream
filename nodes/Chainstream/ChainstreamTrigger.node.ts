@@ -67,6 +67,10 @@ export class ChainstreamTrigger implements INodeType {
 						name: 'Token Migrated',
 						value: 'sol.token.migrated',
 					},
+					{
+						name: 'Token Created',
+						value: 'sol.token.created',
+					},
 				],
 			},
             {
@@ -114,12 +118,12 @@ export class ChainstreamTrigger implements INodeType {
 				const responseData = await chainstreamApiRequest.call(this, 'POST', endpoint, body);
 				this.logger.debug('Chainstream node execute create method return result', { responseData });
 				
-				if (responseData.webhook === undefined || responseData.webhook.id === undefined) {
+				if (responseData === undefined || responseData.id === undefined) {
 					// Required data is missing so was not successful
 					return false;
 				}
 
-				webhookData.webhookId = responseData.webhook.id as string;
+				webhookData.webhookId = responseData.id as string;
 				return true;
 			},
 			async delete(this: IHookFunctions): Promise<boolean> {
@@ -141,34 +145,78 @@ export class ChainstreamTrigger implements INodeType {
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		// const headerData = this.getHeaderData() as IDataObject;
+		const headerData = this.getHeaderData() as IDataObject;
 		const req = this.getRequestObject();
-		// const authentication = this.getNodeParameter('authentication') as string;
-		// let secret = '';
+		
+		try {
+			const webhookData = this.getWorkflowStaticData('node');
+			let secret = webhookData.secret as string;
+			
+			if (!secret) {
+				try {
+					const endpoint = `webhook/endpoint/${webhookData.webhookId}/secret`;
+					const credentials = await this.getCredentials('chainstreamApi');
+					const options = {
+						method: 'GET' as const,
+						uri: `${credentials.apiBaseUrl}/v1/${endpoint}`,
+						headers: {
+							'Authorization': `Bearer ${credentials.sessionToken}`,
+						},
+						json: true,
+					};
+					
+					const response = await this.helpers.requestWithAuthentication.call(this, 'chainstreamApi', options);
+					secret = response.secret;
+					webhookData.secret = secret;
+				} catch (error) {
+					this.logger.warn('Failed to get webhook secret, proceeding without signature verification', { error });
+					return {
+						workflowData: [this.helpers.returnJsonArray(req.body as IDataObject)],
+					};
+				}
+			}
+			
+			if (headerData['svix-signature'] !== undefined) {
+				const { createHmac } = await import('crypto');
+				
+				const svixId = headerData['svix-id'] as string;
+				const svixTimestamp = headerData['svix-timestamp'] as string;
+				const svixSignature = headerData['svix-signature'] as string;
+				
+				const signedContent = `${svixId}.${svixTimestamp}.${req.rawBody}`;
+				const secretBytes = Buffer.from(secret.split('_')[1], "base64");
+				const computedSignature = createHmac('sha256', secretBytes)
+					.update(signedContent)
+					.digest('base64');
 
-		// if (authentication === 'apiKey') {
-			// const credentials = await this.getCredentials('chainstreamApi');
-			// secret = credentials.sharedSecret as string;
-		// }
+				const signatures = svixSignature.split(' ').map(sig => sig.split(',')[1]);
+				const isValidSignature = signatures.some(sig => sig === computedSignature);
 
-		// const topic = this.getNodeParameter('topic') as string;
-		// if (
-		// 	headerData['x-hmac-sha256'] !== undefined
-		// ) {
-		// 	const computedSignature = createHmac('sha256', secret).update(req.rawBody).digest('base64');
+				if (!isValidSignature) {
+					this.logger.warn('Webhook signature verification failed');
+					return {};
+				}
 
-		// 	if (headerData['x-hmac-sha256'] !== computedSignature) {
-		// 		return {};
-		// 	}
+				const currentTime = Math.floor(Date.now() / 1000);
+				const timestamp = parseInt(svixTimestamp);
+				const timeDiff = Math.abs(currentTime - timestamp);
+				
+				if (timeDiff > 300) {
+					this.logger.warn('Webhook timestamp too old', { timeDiff });
+					return {};
+				}
+			} else {
+				this.logger.warn('No signature header found in webhook request');
+				return {};
+			}
 
-        //     if (topic !== headerData['x-topic']) {
-		// 		return {};
-		// 	}
-		// } else {
-		// 	return {};
-		// }
-		return {
-			workflowData: [this.helpers.returnJsonArray(req.body as IDataObject)],
-		};
+			this.logger.debug('Webhook signature verified successfully');
+			return {
+				workflowData: [this.helpers.returnJsonArray(req.body as IDataObject)],
+			};
+		} catch (error) {
+			this.logger.error('Webhook verification failed', { error });
+			return {};
+		}
 	}
 }
