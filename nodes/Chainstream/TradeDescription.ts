@@ -66,7 +66,7 @@ export const tradeFields: INodeProperties[] = [
     displayOptions: {
       show: {
         resource: ['trade'],
-        operation: ['top-traders', 'trade', 'activity'],
+        operation: ['top-traders', 'trade', 'activity', 'gainers-losers'],
       },
     },
   },
@@ -75,35 +75,15 @@ export const tradeFields: INodeProperties[] = [
     name: 'direction',
     type: 'options',
     options: [
-      { name: 'Backward', value: 'backward' },
-      { name: 'Forward', value: 'forward' },
+      { name: 'Next', value: 'next' },
+      { name: 'Prev', value: 'prev' },
     ],
-    default: 'forward',
+    default: 'next',
     displayOptions: {
       show: {
         resource: ['trade'],
-        operation: ['top-traders', 'trade', 'activity'],
+        operation: ['top-traders', 'trade', 'activity', 'gainers-losers'],
       },
     },
-  },
-
-  /* gainers-losers specific options */
-  {
-    displayName: 'Time Window',
-    name: 'window',
-    type: 'options',
-    options: [
-      { name: '1 Day', value: '1d' },
-      { name: '7 Days', value: '7d' },
-      { name: '30 Days', value: '30d' },
-    ],
-    default: '1d',
-    displayOptions: {
-      show: {
-        resource: ['trade'],
-        operation: ['gainers-losers'],
-      },
-    },
-    description: 'Time window for gainers/losers calculation',
   },
 ];
