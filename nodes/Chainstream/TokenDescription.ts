@@ -203,7 +203,7 @@ export const tokenFields: INodeProperties[] = [
     displayName: 'Resolution',
     name: 'resolution',
     type: 'options',
-    options: [ //Available options: 1s, 15s, 30s, 1m, 5m, 15m, 1h, 4h, 12h, 1d
+    options: [ //need ordering from smallest to largest interval for UI
 			{ name: '12h', value: '12h' },
 			{ name: '15m', value: '15m' },
 			{ name: '15s', value: '15s' },
