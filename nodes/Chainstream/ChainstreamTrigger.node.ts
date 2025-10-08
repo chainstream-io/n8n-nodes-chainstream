@@ -1,10 +1,10 @@
 // import { createHmac } from 'crypto';
 import {
-	type IHookFunctions,
-	type IWebhookFunctions,
 	type IDataObject,
+	type IHookFunctions,
 	type INodeType,
 	type INodeTypeDescription,
+	type IWebhookFunctions,
 	type IWebhookResponseData,
 	NodeConnectionType,
 } from 'n8n-workflow';
@@ -73,16 +73,16 @@ export class ChainstreamTrigger implements INodeType {
 					},
 				],
 			},
-            {
-                displayName: 'Filter',
-                name: 'filter',
-                type: 'string',
-                default: '',
-                typeOptions: {
-                    rows: 4,
-                },
-                description: 'Filter the events to only include those that match the filter',
-            },
+			{
+					displayName: 'Filter',
+					name: 'filter',
+					type: 'string',
+					default: '',
+					typeOptions: {
+							rows: 4,
+					},
+					description: 'Filter the events to only include those that match the filter',
+			},
 		],
 	};
 
@@ -117,7 +117,7 @@ export class ChainstreamTrigger implements INodeType {
 				this.logger.debug('Chainstream node start create method', { body });
 				const responseData = await chainstreamApiRequest.call(this, 'POST', endpoint, body);
 				this.logger.debug('Chainstream node execute create method return result', { responseData });
-				
+
 				if (responseData === undefined || responseData.id === undefined) {
 					// Required data is missing so was not successful
 					return false;
@@ -147,11 +147,11 @@ export class ChainstreamTrigger implements INodeType {
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const headerData = this.getHeaderData() as IDataObject;
 		const req = this.getRequestObject();
-		
+
 		try {
 			const webhookData = this.getWorkflowStaticData('node');
 			let secret = webhookData.secret as string;
-			
+
 			if (!secret) {
 				try {
 					const endpoint = `webhook/endpoint/${webhookData.webhookId}/secret`;
@@ -164,7 +164,7 @@ export class ChainstreamTrigger implements INodeType {
 						},
 						json: true,
 					};
-					
+
 					const response = await this.helpers.requestWithAuthentication.call(this, 'chainstreamApi', options);
 					secret = response.secret;
 					webhookData.secret = secret;
@@ -175,14 +175,14 @@ export class ChainstreamTrigger implements INodeType {
 					};
 				}
 			}
-			
+
 			if (headerData['svix-signature'] !== undefined) {
 				const { createHmac } = await import('crypto');
-				
+
 				const svixId = headerData['svix-id'] as string;
 				const svixTimestamp = headerData['svix-timestamp'] as string;
 				const svixSignature = headerData['svix-signature'] as string;
-				
+
 				const signedContent = `${svixId}.${svixTimestamp}.${req.rawBody}`;
 				const secretBytes = Buffer.from(secret.split('_')[1], "base64");
 				const computedSignature = createHmac('sha256', secretBytes)
@@ -200,7 +200,7 @@ export class ChainstreamTrigger implements INodeType {
 				const currentTime = Math.floor(Date.now() / 1000);
 				const timestamp = parseInt(svixTimestamp);
 				const timeDiff = Math.abs(currentTime - timestamp);
-				
+
 				if (timeDiff > 300) {
 					this.logger.warn('Webhook timestamp too old', { timeDiff });
 					return {};
