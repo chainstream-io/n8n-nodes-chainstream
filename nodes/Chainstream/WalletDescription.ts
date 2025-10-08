@@ -13,19 +13,15 @@ export const walletOperations: INodeProperties[] = [
     },
     options: [
       { name: 'Balance', value: 'balance', description: 'Get wallet balance', action: 'Get wallet balance' },
-      { name: 'Calculate PnL', value: 'calculate-pnl', description: 'Calculate wallet PnL for tokens', action: 'Calculate' },
-      { name: 'Pnl', value: 'pnl', description: 'Get wallet PnL and trades', action: 'Get wallet pnl' },
-      { name: 'Stats', value: 'stats', description: 'Get wallet trading stats', action: 'Get wallet stats' },
     ],
-    default: 'pnl',
+    default: 'balance',
   },
 ];
 
 export const walletFields: INodeProperties[] = [
-  // Chain ID (shared)
   {
     displayName: 'Chain ID Name or ID',
-    name: 'chainId',
+    name: 'chain',
     type: 'options',
     default: '',
     typeOptions: {
@@ -34,7 +30,7 @@ export const walletFields: INodeProperties[] = [
     displayOptions: {
       show: {
         resource: ['wallet'],
-        operation: ['pnl', 'stats', 'balance', 'calculate-pnl'],
+        operation: ['balance'],
       },
     },
     description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
@@ -51,7 +47,7 @@ export const walletFields: INodeProperties[] = [
     displayOptions: {
       show: {
         resource: ['wallet'],
-        operation: ['pnl', 'stats', 'balance', 'calculate-pnl'],
+        operation: ['balance'],
       },
     },
     required: true,
@@ -64,72 +60,12 @@ export const walletFields: INodeProperties[] = [
       password: true,
     },
     default: '',
-    description: 'Optional token address to filter results',
+    description: 'Specific token address to filter wallet balances',
     displayOptions: {
       show: {
         resource: ['wallet'],
-        operation: ['pnl', 'balance'],
+        operation: ['balance'],
       },
     },
-  },
-  {
-    displayName: 'Token Addresses',
-    name: 'tokenAddresses',
-    type: 'string',
-    typeOptions: {
-      password: true,
-    },
-    default: '',
-    description: 'Comma-separated token addresses for PnL calculation',
-    displayOptions: {
-      show: {
-        resource: ['wallet'],
-        operation: ['calculate-pnl'],
-      },
-    },
-  },
-  {
-    displayName: 'Limit',
-    name: 'limit',
-    type: 'number',
-    default: 50,
-    typeOptions: {
-      minValue: 1,
-    },
-    description: 'Max number of results to return',
-    displayOptions: {
-      show: {
-        resource: ['wallet'],
-        operation: ['calculate-pnl', 'balance'],
-      },
-    },
-  },
-  {
-    displayName: 'Cursor',
-    name: 'cursor',
-    type: 'string',
-    default: '',
-    displayOptions: {
-      show: {
-        resource: ['wallet'],
-        operation: ['calculate-pnl', 'balance'],
-      },
-    },
-  },
-  {
-    displayName: 'Direction',
-    name: 'direction',
-    type: 'options',
-    options: [
-      { name: 'Backward', value: 'backward' },
-      { name: 'Forward', value: 'forward' },
-    ],
-    default: 'forward',
-    displayOptions: {
-      show: {
-        resource: ['wallet'],
-        operation: ['calculate-pnl', 'balance'],
-      },
-    },
-  },
+  }
 ];

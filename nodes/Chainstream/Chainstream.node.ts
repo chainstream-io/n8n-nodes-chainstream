@@ -74,6 +74,7 @@ export class Chainstream implements INodeType {
 		],
 	};
 
+	/*
 	methods = {
 		loadOptions: {
 			async getChains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
@@ -93,6 +94,31 @@ export class Chainstream implements INodeType {
 				return returnData;
 			}
 		}
+	};*/
+
+	methods = {
+		loadOptions: {
+			async getChains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const response = await chainstreamApiRequest.call(this, 'GET', 'blockchain');
+
+				if (!Array.isArray(response)) return returnData;
+
+				for (const chain of response) {
+					const displayName = (chain && (chain.name ?? chain.symbol ?? String(chain.chainId ?? ''))) as string;
+					const value = chain && (chain.chainId ?? chain.id ?? chain.symbol ?? displayName);
+
+					if (displayName == null) continue;
+
+					returnData.push({
+						name: displayName,
+						value,
+					});
+				}
+
+				return returnData;
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -240,25 +266,11 @@ export class Chainstream implements INodeType {
 						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/gainers-losers`, qs);
 					}
 				} else if(resource === 'wallet'){
-					if(operation === 'pnl'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const walletAddress = this.getNodeParameter('walletAddress', i) as string;
-						qs.tokenAddress = this.getNodeParameter('tokenAddress', i);
-						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/wallet/${walletAddress}`, qs);
-					} else if(operation === 'stats'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const walletAddress = this.getNodeParameter('walletAddress', i) as string;
-						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/wallet/${walletAddress}/stats`, {});
-					} else if(operation === 'balance'){
+					if(operation === 'balance'){
 						const chainId = this.getNodeParameter("chainId", i) as string;
 						const walletAddress = this.getNodeParameter('walletAddress', i) as string;
 						qs.tokenAddress = this.getNodeParameter('tokenAddress', i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/wallet/${walletAddress}/balance`, qs);
-					} else if(operation === 'calculate-pnl'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const walletAddress = this.getNodeParameter('walletAddress', i) as string;
-						qs.tokenAddresses = this.getNodeParameter('tokenAddresses', i);
-						responseData = await chainstreamApiRequest.call(this, 'POST', `trade/${chainId}/wallet/${walletAddress}/calculate-pnl`, qs);
 					}
 				}
 
