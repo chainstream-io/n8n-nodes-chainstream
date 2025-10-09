@@ -11,6 +11,21 @@ import {
 import { chainstreamApiRequest } from './GenericFunctions';
 import { tokenFields, tokenOperations } from './TokenDescription';
 
+export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
+  return (
+    this.getNodeParameter('chainId', index) ??
+    this.getNodeParameter('chain', index) ??
+    this.getNodeParameter('Chain_ID', index)
+  ) as string;
+}
+
+export function getTokenAddress(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
+  return (
+    this.getNodeParameter('tokenAddress', index) ??
+    this.getNodeParameter('Token_Address', index)
+  ) as string;
+}
+
 export class Chainstream implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Chainstream',
@@ -131,20 +146,20 @@ export class Chainstream implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 		const length = items.length;
 		let responseData;
-		const qs: IDataObject = {};
 		const resource = this.getNodeParameter('resource', 0);
 		const operation = this.getNodeParameter('operation', 0);
 
 
 		for (let i = 0; i < length; i++) {
+			const qs: IDataObject = {};
 			try {
 				if (resource === 'token') {
 					if (operation === 'get') {
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}`, {});
 					} else if (operation === 'getMany') {
-						const chainId = this.getNodeParameter("chainId", i) as string;
+						const chainId = getChainId.call(this, i);
 						qs.tokenAddresses = this.getNodeParameter('tokenAddresses', i) as string;
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/multi`, {}, qs);
 					} else if (operation === 'search') {
@@ -154,76 +169,76 @@ export class Chainstream implements INodeType {
 						qs.limit = this.getNodeParameter('limit', i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/search`, {}, qs);
 					} else if(operation === 'detail'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}`, {});
 					} else if(operation === 'metadata'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/metadata`, {});
 					} else if(operation === 'liquidity'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/liquidity`, {});
 					} else if(operation === 'stats'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/stats`, {});
 					} else if(operation === 'holders'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						qs.limit = this.getNodeParameter('limit', i) as number;
 						qs.cursor = this.getNodeParameter('cursor', i) as string;
 						qs.direction = this.getNodeParameter('direction', i) as string;
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/holders`, qs);
 					} else if(operation === 'candles'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						qs.resolution = this.getNodeParameter('resolution', i) as string;
 						qs.from = this.getNodeParameter('from', i) as number;
 						qs.to = this.getNodeParameter('to', i) as number;
 						qs.limit = this.getNodeParameter('limit', i) as number;
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/candles`, qs);
 					} else if(operation === 'topHolders'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/topHolders`, {});
 					} else if(operation === 'marketData'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/marketData`, {});
 					} else if(operation === 'prices'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i) as string;
 						qs.direction = this.getNodeParameter('direction', i) as string;
 						qs.limit = this.getNodeParameter('limit', i) as number;
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/prices`, qs);
 					} else if(operation === 'price'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						qs.timestamp = this.getNodeParameter('timestamp', i) as number;
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/price`, qs);
 					} else if(operation === 'creation'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/creation`, {});
 					} else if(operation === 'mintAndBurn'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i) as string;
 						qs.limit = this.getNodeParameter('limit', i) as number;
 						qs.direction = this.getNodeParameter('direction', i) as string;
 						qs.type = this.getNodeParameter('type', i) as string;
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/mintAndBurn`, qs);
 					} else if(operation === 'security'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
-						const tokenAddress = this.getNodeParameter('tokenAddress', i) as string;
+						const chainId = getChainId.call(this, i);
+						const tokenAddress = getTokenAddress.call(this, i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/security`, {});
 					}
 				} else if (resource === 'trade') {
 					if(operation === 'trade'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
+						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
 						qs.tokenAddress = this.getNodeParameter('tokenAddress', i);
 						qs.direction = this.getNodeParameter('direction', i);
@@ -237,7 +252,7 @@ export class Chainstream implements INodeType {
 						qs.type = this.getNodeParameter('type', i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}`, qs);
 					} else if(operation === 'activity'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
+						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
 						qs.limit = this.getNodeParameter('limit', i);
 						qs.direction = this.getNodeParameter('direction', i);
@@ -251,7 +266,7 @@ export class Chainstream implements INodeType {
 						qs.type = this.getNodeParameter('type', i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/activities`, qs);
 					} else if(operation === 'top-traders'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
+						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
 						qs.limit = this.getNodeParameter('limit', i);
 						qs.direction = this.getNodeParameter('direction', i);
@@ -261,7 +276,7 @@ export class Chainstream implements INodeType {
 						qs.sortBy = this.getNodeParameter('sortBy', i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/top-traders`, qs);
 					} else if(operation === 'gainers-losers'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
+						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
 						qs.limit = this.getNodeParameter('limit', i);
 						qs.direction = this.getNodeParameter('direction', i);
@@ -272,7 +287,7 @@ export class Chainstream implements INodeType {
 					}
 				} else if(resource === 'wallet'){
 					if(operation === 'balance'){
-						const chainId = this.getNodeParameter("chainId", i) as string;
+						const chainId = getChainId.call(this, i);
 						const walletAddress = this.getNodeParameter('walletAddress', i) as string;
 						qs.tokenAddress = this.getNodeParameter('tokenAddress', i);
 						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/wallet/${walletAddress}/balance`, qs);
