@@ -12,22 +12,22 @@ export const tokenOperations: INodeProperties[] = [
             },
         },
         options: [
-            { name: 'Candles', value: 'candles', description: 'Get token candles', action: 'Get token candles' },
-            { name: 'Creation', value: 'creation', description: 'Get token creation info', action: 'Get token creation' },
-            { name: 'Detail', value: 'detail', description: 'Get token detail', action: 'Get token detail' },
+            { name: 'Candles', value: 'candles', description: 'Get token price candles', action: 'Get token price candles' },
+            { name: 'Creation', value: 'creation', description: 'Get token creation information', action: 'Get token creation information' },
+            { name: 'Detail', value: 'detail', description: 'Get detail of token', action: 'Get detail of token' },
             { name: 'Get', value: 'get', description: 'Get a token', action: 'Get a token' },
             { name: 'Get Many', value: 'getMany', description: 'Get many tokens', action: 'Get many tokens' },
-            { name: 'Holders', value: 'holders', description: 'List token holders', action: 'List token holders' },
-            { name: 'Liquidity', value: 'liquidity', description: 'Get token liquidity pools', action: 'Get token liquidity' },
-            { name: 'Market Data', value: 'marketData', description: 'Get token market data', action: 'Get market data' },
-            { name: 'Metadata', value: 'metadata', description: 'Get token metadata', action: 'Get token metadata' },
-            { name: 'Mint And Burn', value: 'mintAndBurn', description: 'Get token mint and burn activity', action: 'Get mint and burn' },
-            { name: 'Price', value: 'price', description: 'Get token price at timestamp', action: 'Get token price' },
-            { name: 'Prices', value: 'prices', description: 'Get token prices', action: 'Get token prices' },
-            { name: 'Search', value: 'search', description: 'Search for tokens', action: 'Search for tokens' },
-            { name: 'Security', value: 'security', description: 'Get token security info', action: 'Get token security' },
-            { name: 'Stats', value: 'stats', description: 'Get token stats', action: 'Get token stats' },
-            { name: 'Top Holders', value: 'topHolders', description: 'Get top holders', action: 'Get top holders' },
+            { name: 'Holders', value: 'holders', description: 'Get holders of a token', action: 'Get holders of a token' },
+            { name: 'Liquidity', value: 'liquidity', description: 'Get all pools containing this token', action: 'Get all pools containing this token' },
+            { name: 'Market Data', value: 'marketData', description: 'Get token market data', action: 'Get token market data' },
+            { name: 'Metadata', value: 'metadata', description: 'Get metadata of token', action: 'Get metadata of token' },
+            { name: 'Mint And Burn', value: 'mintAndBurn', description: 'Get mint and burn information for a token', action: 'Get mint and burn information for a token' },
+            { name: 'Price by Time', value: 'price', description: 'Get token price at a specific timestamp', action: 'Get token price at a specific timestamp' },
+            { name: 'Prices', value: 'prices', description: 'Get historical price data for a token', action: 'Get historical price data for a token' },
+            { name: 'Search', value: 'search', description: 'Search token information by criteria', action: 'Search token informaton by criteria' },
+            { name: 'Security', value: 'security', description: 'Get token security information', action: 'Get token security information' },
+            { name: 'Stats', value: 'stats', description: 'Get token statistics', action: 'Get token statistics' },
+            { name: 'Top Holders', value: 'topHolders', description: 'Get the top 20 holders for a token', action: 'Get the top 20 holders for a token' },
         ],
         default: 'get',
     },
@@ -148,6 +148,7 @@ export const tokenFields: INodeProperties[] = [
         operation: ['search'],
       },
     },
+		description: 'The search query',
   },
   {
     displayName: 'Limit',
@@ -162,7 +163,7 @@ export const tokenFields: INodeProperties[] = [
     typeOptions: {
       minValue: 1,
       // eslint-disable-next-line n8n-nodes-base/node-param-type-options-max-value-present
-      maxValue: 200,
+      maxValue: 100,
     },
     default: 50,
     description: 'Max number of results to return',
@@ -180,6 +181,7 @@ export const tokenFields: INodeProperties[] = [
         operation: ['holders','prices','mintAndBurn'],
       },
     },
+		description: 'Cursor for pagination',
   },
 
 	/* token:holders, token:prices pagination */
@@ -198,33 +200,23 @@ export const tokenFields: INodeProperties[] = [
         operation: ['holders','prices','mintAndBurn'],
       },
     },
+		description: 'Pagination direction (next or prev)',
   },
 
   /* token:candles */
-  {
-    displayName: 'Resolution',
-    name: 'resolution',
-    type: 'options',
-    options: [ //need ordering from smallest to largest interval for UI
-			{ name: '12h', value: '12h' },
-			{ name: '15m', value: '15m' },
-			{ name: '15s', value: '15s' },
-			{ name: '1d', value: '1d' },
-      { name: '1h', value: '1h' },
-      { name: '1m', value: '1m' },
-     	{ name: '1s', value: '1s' },
-			{ name: '30s', value: '30s' },
-      { name: '4h', value: '4h' },
-      { name: '5m', value: '5m' },
-    ],
-    default: '1m',
-    displayOptions: {
-      show: {
-        resource: ['token'],
-        operation: ['candles'],
-      },
-    },
-  },
+	{
+		displayName: 'Resolution',
+		name: 'resolution',
+		type: 'string',
+		default: '1m',
+    description: 'Resolution interval. Supported values: 1s, 15s, 30s, 1m, 5m, 15m, 1h, 4h, 12h, 1d.',
+		displayOptions: {
+			show: {
+				resource: ['token'],
+				operation: ['candles'],
+			},
+		},
+	},
   {
     displayName: 'Start Timestamp (Unix Epoch In Milliseconds)',
     name: 'from',
@@ -284,23 +276,19 @@ export const tokenFields: INodeProperties[] = [
   },
 
   /* token:mintAndBurn filters and pagination */
-  {
-    displayName: 'Type',
-    name: 'type',
-    type: 'options',
-    options: [
-      { name: 'All', value: 'all' },
-      { name: 'Mint', value: 'mint' },
-      { name: 'Burn', value: 'burn' },
-    ],
-    default: 'all',
-    displayOptions: {
-      show: {
-        resource: ['token'],
-        operation: ['mintAndBurn'],
-      },
-    },
-  },
+	{
+		displayName: 'Type',
+		name: 'type',
+		type: 'string',
+		default: '',
+		description: 'Type of event: "mint", "burn", or "all"',
+		displayOptions: {
+			show: {
+				resource: ['token'],
+				operation: ['mintAndBurn'],
+			},
+		},
+	},
 
   /* token:topHolders no extra params (kept for clarity) */
   {

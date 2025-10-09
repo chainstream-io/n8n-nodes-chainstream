@@ -63,9 +63,13 @@ export class Chainstream implements INodeType {
 						value: 'token',
 					},
 					{
-						name: 'Dex',
-						value: 'dex',
+						name: 'Wallet',
+						value: 'wallet',
 					},
+					{
+						name: 'Trade',
+						value: 'trade',
+					}
 				],
 				default: 'token',
 			},
