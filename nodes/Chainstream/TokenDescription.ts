@@ -36,7 +36,7 @@ export const tokenOperations: INodeProperties[] = [
 export const tokenFields: INodeProperties[] = [
   // Chain ID (shared)
 	{
-		displayName: 'Chain ID',
+		displayName: 'Chain',
 		name: 'chain',
 		type: 'string',
 		default: '',

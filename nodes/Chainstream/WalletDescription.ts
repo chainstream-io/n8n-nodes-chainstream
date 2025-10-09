@@ -20,7 +20,7 @@ export const walletOperations: INodeProperties[] = [
 
 export const walletFields: INodeProperties[] = [
  	{
-		displayName: 'Chain ID',
+		displayName: 'Chain',
 		name: 'chain',
 		type: 'string',
 		default: '',
