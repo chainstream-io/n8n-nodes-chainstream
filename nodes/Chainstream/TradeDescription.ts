@@ -23,23 +23,24 @@ export const tradeOperations: INodeProperties[] = [
 
 export const tradeFields: INodeProperties[] = [
   // Chain ID (shared)
-  {
-    displayName: 'Chain Name or ID',
-    name: 'chainId',
-    type: 'options',
-    default: '',
-    typeOptions: {
-      loadOptionsMethod: 'getChains',
-    },
-    displayOptions: {
+	{
+		displayName: 'Chain ID',
+		name: 'chain',
+		type: 'string',
+		default: '',
+		typeOptions: {
+			loadOptionsMethod: 'getChains',
+		},
+		displayOptions: {
       show: {
         resource: ['trade'],
         operation: ['trade', 'activity', 'top-traders', 'gainers-losers'],
       },
-    },
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-    required: true,
-  },
+		},
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		required: true,
+	},
+
 
   /* trade:top-traders & trade:trade & trade:activity */
   {

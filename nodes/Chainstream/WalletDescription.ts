@@ -19,23 +19,23 @@ export const walletOperations: INodeProperties[] = [
 ];
 
 export const walletFields: INodeProperties[] = [
-  {
-    displayName: 'Chain ID Name or ID',
-    name: 'chain',
-    type: 'options',
-    default: '',
-    typeOptions: {
-      loadOptionsMethod: 'getChains',
-    },
-    displayOptions: {
+ 	{
+		displayName: 'Chain ID',
+		name: 'chain',
+		type: 'string',
+		default: '',
+		typeOptions: {
+			loadOptionsMethod: 'getChains',
+		},
+		displayOptions: {
       show: {
         resource: ['wallet'],
         operation: ['balance'],
       },
-    },
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-    required: true,
-  },
+		},
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		required: true,
+	},
   {
     displayName: 'Wallet Address',
     name: 'walletAddress',

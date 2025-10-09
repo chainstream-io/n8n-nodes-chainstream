@@ -105,14 +105,14 @@ export class Chainstream implements INodeType {
 				if (!Array.isArray(response)) return returnData;
 
 				for (const chain of response) {
-					const displayName = (chain && (chain.name ?? chain.symbol ?? String(chain.chainId ?? ''))) as string;
-					const value = chain && (chain.chainId ?? chain.id ?? chain.symbol ?? displayName);
+					const symbol = chain.symbol?.toLowerCase();
+					const name = chain.name ?? symbol;
 
-					if (displayName == null) continue;
+					if (!symbol || !name) continue;
 
 					returnData.push({
-						name: displayName,
-						value,
+						name: name,
+						value: symbol,
 					});
 				}
 
@@ -120,6 +120,7 @@ export class Chainstream implements INodeType {
 			},
 		},
 	};
+
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();

@@ -35,26 +35,26 @@ export const tokenOperations: INodeProperties[] = [
 
 export const tokenFields: INodeProperties[] = [
   // Chain ID (shared)
-  {
-    // eslint-disable-next-line n8n-nodes-base/node-param-display-name-wrong-for-dynamic-options
-    displayName: 'Chain ID',
-    name: 'chainId',
-    type: 'options',
-    default: '',
-    typeOptions: {
-      loadOptionsMethod: 'getChains',
-    },
-    displayOptions: {
-      show: {
-        resource: ['token'],
-        operation: [
-          'get','getMany','search','detail','metadata','liquidity','stats','holders','candles','topHolders','marketData','prices','price','creation','mintAndBurn','security',
-        ],
-      },
-    },
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-    required: true,
-  },
+	{
+		displayName: 'Chain ID',
+		name: 'chain',
+		type: 'string',
+		default: '',
+		typeOptions: {
+			loadOptionsMethod: 'getChains',
+		},
+		displayOptions: {
+			show: {
+				resource: ['token'],
+				operation: [
+					'get','getMany','search','detail','metadata','liquidity','stats','holders','candles','topHolders','marketData','prices','price','creation','mintAndBurn','security',
+				],
+			},
+		},
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		required: true,
+	},
+
 
   /* token:get, token:detail, token:metadata, token:liquidity, token:stats,
      token:holders, token:candles, token:topHolders, token:marketData,
@@ -181,6 +181,8 @@ export const tokenFields: INodeProperties[] = [
       },
     },
   },
+
+	/* token:holders, token:prices pagination */
   {
     displayName: 'Direction',
     name: 'direction',
