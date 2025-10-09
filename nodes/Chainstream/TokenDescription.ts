@@ -262,7 +262,7 @@ export const tokenFields: INodeProperties[] = [
 
   /* token:price */
   {
-    displayName: 'Timestamp (Seconds)',
+    displayName: 'Timestamp',
     name: 'timestamp',
     type: 'number',
     default: 0,

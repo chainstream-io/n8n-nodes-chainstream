@@ -22,9 +22,11 @@ export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, inde
 export function getTokenAddress(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
   return (
     this.getNodeParameter('tokenAddress', index) ??
-    this.getNodeParameter('Token_Address', index)
+    this.getNodeParameter('Token_Address', index) ??
+    this.getNodeParameter('token', index)
   ) as string;
 }
+
 
 export class Chainstream implements INodeType {
 	description: INodeTypeDescription = {
