@@ -16,7 +16,7 @@ import { walletFields, walletOperations } from './WalletDescription';
 
 export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
   const searchPatterns = [
-    ['chainId', 'chain', 'Chain_ID', 'chain_id', 'network', 'chainName', 'chainName'],
+    ['chainId', 'chain', 'Chain_ID', 'chain_id', 'network', 'chainName'],
     [/chain/i, /network/i, /blockchain/i, /chain_name/i, /name/i]
   ];
 
@@ -27,8 +27,11 @@ export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, inde
       `Could not find chain ID parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
     );
   }
-  return result;
+
+  const normalized = result.toLowerCase().trim();
+  return normalized === 'solana' ? 'sol' : normalized;
 }
+
 
 export function getTokenAddress(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
   const searchPatterns = [
