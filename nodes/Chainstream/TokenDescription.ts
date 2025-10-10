@@ -304,7 +304,7 @@ export const tokenFields: INodeProperties[] = [
     },
     typeOptions: {
       minValue: 1,
-      maxValue: 100,
+      maxValue: 50,
     },
   },
 ];
