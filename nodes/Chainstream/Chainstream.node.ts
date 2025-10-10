@@ -7,26 +7,94 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	NodeConnectionType,
+	NodeOperationError,
 } from 'n8n-workflow';
 import { chainstreamApiRequest } from './GenericFunctions';
 import { tokenFields, tokenOperations } from './TokenDescription';
+import { tradeFields, tradeOperations } from './TradeDescription';
+import { walletFields, walletOperations } from './WalletDescription';
 
 export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
-  return (
-    this.getNodeParameter('chainId', index) ??
-    this.getNodeParameter('chain', index) ??
-    this.getNodeParameter('Chain_ID', index)
-  ) as string;
+  const searchPatterns = [
+    ['chainId', 'chain', 'Chain_ID', 'chain_id', 'network'],
+    [/chain/i, /network/i, /blockchain/i]
+  ];
+
+  const result = fuzzyFindParameter(this, index, searchPatterns, 'chain ID');
+  if (!result) {
+    throw new NodeOperationError(
+      this.getNode(),
+      `Could not find chain ID parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+    );
+  }
+  return result;
 }
 
 export function getTokenAddress(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
-  return (
-    this.getNodeParameter('tokenAddress', index) ??
-    this.getNodeParameter('Token_Address', index) ??
-    this.getNodeParameter('token', index)
-  ) as string;
+  const searchPatterns = [
+    ['tokenAddress', 'Token_Address', 'token', 'contractAddress'],
+    [/token/i, /address/i, /contract/i]
+  ];
+
+  const result = fuzzyFindParameter(this, index, searchPatterns, 'token address');
+  if (!result) {
+    throw new NodeOperationError(
+      this.getNode(),
+      `Could not find token address parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+    );
+  }
+  return result;
 }
 
+export function fuzzyFindParameter(
+  context: IExecuteFunctions | ILoadOptionsFunctions,
+  index: number,
+  searchPatterns: (string | RegExp)[][],
+  parameterType: string
+): string | null {
+  for (const patternGroup of searchPatterns) {
+    for (const pattern of patternGroup) {
+      if (typeof pattern === 'string') {
+        try {
+          const value = context.getNodeParameter(pattern, index, undefined) as string | undefined;
+          if (value && typeof value === 'string' && value.trim()) {
+            return value.trim();
+          }
+        } catch (error) {
+        }
+      } else {
+        // 正则表达式模糊匹配
+        const nodeParameters = context.getNode().parameters;
+        if (nodeParameters) {
+          const matchedParam = Object.keys(nodeParameters).find(paramName =>
+            pattern.test(paramName)
+          );
+
+          if (matchedParam) {
+            try {
+              const value = context.getNodeParameter(matchedParam, index, undefined) as string | undefined;
+              if (value && typeof value === 'string' && value.trim()) {
+                return value.trim();
+              }
+            } catch (error) {
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+export function getAvailableParams(context: IExecuteFunctions | ILoadOptionsFunctions): string {
+  try {
+    const node = context.getNode();
+    return node.parameters ? Object.keys(node.parameters).join(', ') : 'none';
+  } catch (error) {
+    return 'unknown';
+  }
+}
 
 export class Chainstream implements INodeType {
 	description: INodeTypeDescription = {
@@ -92,30 +160,12 @@ export class Chainstream implements INodeType {
 			},
 			...tokenOperations,
 			...tokenFields,
+			...walletOperations,
+			...walletFields,
+			...tradeOperations,
+			...tradeFields,
 		],
 	};
-
-	/*
-	methods = {
-		loadOptions: {
-			async getChains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const returnData: INodePropertyOptions[] = [];
-				const response = await chainstreamApiRequest.call(
-					this,
-					'GET',
-					'blockchain',
-				);
-
-				for (const chainId of response) {
-					returnData.push({
-						name: chainId,
-						value: chainId,
-					});
-				}
-				return returnData;
-			}
-		}
-	};*/
 
 	methods = {
 		loadOptions: {
@@ -141,6 +191,18 @@ export class Chainstream implements INodeType {
 			},
 		},
 	};
+
+
+	getQueryParams(this: IExecuteFunctions, i: number, paramNames: string[]): IDataObject {
+			const qs: IDataObject = {};
+			paramNames.forEach(param => {
+					const value = this.getNodeParameter(param, i);
+					if (value !== undefined && value !== null && value !== '') {
+							qs[param] = value;
+					}
+			});
+			return qs;
+	}
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
