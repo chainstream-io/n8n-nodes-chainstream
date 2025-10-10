@@ -16,8 +16,8 @@ import { walletFields, walletOperations } from './WalletDescription';
 
 export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
   const searchPatterns = [
-    ['chainId', 'chain', 'Chain_ID', 'chain_id', 'network'],
-    [/chain/i, /network/i, /blockchain/i]
+    ['chainId', 'chain', 'Chain_ID', 'chain_id', 'network', 'chainName', 'chainName'],
+    [/chain/i, /network/i, /blockchain/i, /chain_name/i, /name/i]
   ];
 
   const result = fuzzyFindParameter(this, index, searchPatterns, 'chain ID');
@@ -253,7 +253,7 @@ export class Chainstream implements INodeType {
 						qs.limit = this.getNodeParameter('limit', i) as number;
 						qs.cursor = this.getNodeParameter('cursor', i) as string;
 						qs.direction = this.getNodeParameter('direction', i) as string;
-						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/holders`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/holders`, {}, qs);
 					} else if(operation === 'candles'){
 						const chainId = getChainId.call(this, i);
 						const tokenAddress = getTokenAddress.call(this, i);
@@ -261,7 +261,7 @@ export class Chainstream implements INodeType {
 						qs.from = this.getNodeParameter('from', i) as number;
 						qs.to = this.getNodeParameter('to', i) as number;
 						qs.limit = this.getNodeParameter('limit', i) as number;
-						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/candles`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/candles`, {}, qs);
 					} else if(operation === 'topHolders'){
 						const chainId = getChainId.call(this, i);
 						const tokenAddress = getTokenAddress.call(this, i);
@@ -276,12 +276,12 @@ export class Chainstream implements INodeType {
 						qs.cursor = this.getNodeParameter('cursor', i) as string;
 						qs.direction = this.getNodeParameter('direction', i) as string;
 						qs.limit = this.getNodeParameter('limit', i) as number;
-						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/prices`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/prices`, {}, qs);
 					} else if(operation === 'price'){
 						const chainId = getChainId.call(this, i);
 						const tokenAddress = getTokenAddress.call(this, i);
 						qs.timestamp = this.getNodeParameter('timestamp', i) as number;
-						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/price`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/price`, {}, qs);
 					} else if(operation === 'creation'){
 						const chainId = getChainId.call(this, i);
 						const tokenAddress = getTokenAddress.call(this, i);
@@ -293,7 +293,7 @@ export class Chainstream implements INodeType {
 						qs.limit = this.getNodeParameter('limit', i) as number;
 						qs.direction = this.getNodeParameter('direction', i) as string;
 						qs.type = this.getNodeParameter('type', i) as string;
-						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/mintAndBurn`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `token/${chainId}/${tokenAddress}/mintAndBurn`, {}, qs);
 					} else if(operation === 'security'){
 						const chainId = getChainId.call(this, i);
 						const tokenAddress = getTokenAddress.call(this, i);
@@ -313,7 +313,7 @@ export class Chainstream implements INodeType {
 						qs.beforeBlockHeight = this.getNodeParameter('beforeBlockHeight', i);
 						qs.afterBlockHeight = this.getNodeParameter('afterBlockHeight', i);
 						qs.type = this.getNodeParameter('type', i);
-						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}`, {}, qs);
 					} else if(operation === 'activity'){
 						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
@@ -327,7 +327,7 @@ export class Chainstream implements INodeType {
 						qs.beforeBlockHeight = this.getNodeParameter('beforeBlockHeight', i);
 						qs.afterBlockHeight = this.getNodeParameter('afterBlockHeight', i);
 						qs.type = this.getNodeParameter('type', i);
-						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/activities`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/activities`, {}, qs);
 					} else if(operation === 'top-traders'){
 						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
@@ -337,7 +337,7 @@ export class Chainstream implements INodeType {
 						qs.timeFrame = this.getNodeParameter('timeFrame', i);
 						qs.sortType = this.getNodeParameter('sortType', i);
 						qs.sortBy = this.getNodeParameter('sortBy', i);
-						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/top-traders`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/top-traders`, {}, qs);
 					} else if(operation === 'gainers-losers'){
 						const chainId = getChainId.call(this, i);
 						qs.cursor = this.getNodeParameter('cursor', i);
@@ -346,7 +346,7 @@ export class Chainstream implements INodeType {
 						qs.type = this.getNodeParameter('type', i);
 						qs.sortBy = this.getNodeParameter('sortBy', i);
 						qs.sortType = this.getNodeParameter('sortType', i);
-						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/gainers-losers`, qs);
+						responseData = await chainstreamApiRequest.call(this, 'GET', `trade/${chainId}/gainers-losers`, {}, qs);
 					}
 				} else if(resource === 'wallet'){
 					if(operation === 'balance'){
