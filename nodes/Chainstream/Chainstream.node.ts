@@ -11,7 +11,6 @@ import {
 } from 'n8n-workflow';
 import { chainstreamApiRequest } from './GenericFunctions';
 import { tokenFields, tokenOperations } from './TokenDescription';
-import { tradeFields, tradeOperations } from './TradeDescription';
 import { walletFields, walletOperations } from './WalletDescription';
 
 export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, index: number): string {
