@@ -52,7 +52,7 @@ export const walletFields: INodeProperties[] = [
     },
     required: true,
   },
-  {
+  /*{
     displayName: 'Token Address',
     name: 'tokenAddress',
     type: 'string',
@@ -67,5 +67,5 @@ export const walletFields: INodeProperties[] = [
         operation: ['balance'],
       },
     },
-  }
+  }*/
 ];

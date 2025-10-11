@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-chainstream",
-	"version": "0.0.55",
+	"version": "0.0.62",
 	"description": "Chainstream nodes for n8n",
 	"keywords": [
 		"n8n-community-node-package",
