@@ -20,8 +20,8 @@
       "notesInFlow": true,
       "credentials": {
         "telegramApi": {
-          "id": "p2qJnu0BupLyffzi",
-          "name": "Telegram Myself"
+          "id": "<REPLACE_WITH_YOUR_TELEGRAM_CRED_ID_OR_REMOVE>",
+          "name": "Telegram Yourself (placeholder)"
         }
       }
     },
@@ -40,8 +40,8 @@
       "name": "Azure OpenAI Chat Model",
       "credentials": {
         "azureOpenAiApi": {
-          "id": "kH6X50Ga552Bj8Uz",
-          "name": "Azure OpenAI SageAI"
+          "id": "<REPLACE_WITH_YOUR_AZURE_OPENAI_CRED_ID_OR_REMOVE>",
+          "name": "Azure OpenAI (placeholder)"
         }
       }
     },
@@ -91,8 +91,8 @@
       "webhookId": "75e6aaa1-e749-41b5-aa4c-16b620f7ed93",
       "credentials": {
         "telegramApi": {
-          "id": "p2qJnu0BupLyffzi",
-          "name": "Telegram Myself"
+          "id": "<REPLACE_WITH_YOUR_TELEGRAM_CRED_ID_OR_REMOVE>",
+          "name": "Telegram Yourself (placeholder)"
         }
       }
     },
@@ -100,7 +100,7 @@
       "parameters": {
         "operation": "holders",
         "chain": "={{ $fromAI('Chain', ``, 'string') }}",
-        "tokenAddress": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Token_Address', ``, 'string') }}"
+        "tokenAddress": "={{ $fromAI('Token_Address', ``, 'string') }}"
       },
       "type": "n8n-nodes-chainstream.chainstreamTool",
       "typeVersion": 1,
@@ -112,8 +112,8 @@
       "name": "ChainStream",
       "credentials": {
         "chainstreamApi": {
-          "id": "h6ZbBd3M0EirLEk3",
-          "name": "Chainstream myself"
+          "id": "<REPLACE_WITH_YOUR_CHAINSTREAM_CRED_ID_OR_REMOVE>",
+          "name": "Chainstream (placeholder)"
         }
       }
     }
