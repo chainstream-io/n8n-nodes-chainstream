@@ -26,3 +26,11 @@ node_modules
 # Assets not needed in package
 assets
 screenshots
+
+# Include changelog, developer docs and templates in the published package
+!CHANGELOG.md
+!DEVELOPER.md
+!templates/**
+
+# If you rename LICENSE.md -> LICENSE, replace the LICENSE.md exception above with:
+# !LICENSE

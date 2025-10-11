@@ -1,0 +1,190 @@
+{
+  "name": "Blockchain Smart AI Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        -160
+      ],
+      "id": "616e523d-0f1d-4408-8f30-713069ec97dc",
+      "name": "Telegram Trigger",
+      "webhookId": "ccd027f5-73b4-4776-9c6b-905845a1ac7d",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "p2qJnu0BupLyffzi",
+          "name": "Telegram Myself"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        128,
+        48
+      ],
+      "id": "23751993-f813-4d34-aa39-a52a86fd32ca",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "kH6X50Ga552Bj8Uz",
+          "name": "Azure OpenAI SageAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        -160
+      ],
+      "id": "a76586e4-3445-42c9-a659-c156f22fa83e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        48
+      ],
+      "id": "8ce274ae-d71f-4780-a4fd-37e7c28f45b2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        -160
+      ],
+      "id": "f4880748-4613-4fa1-b5b3-2a2b3887118f",
+      "name": "Send a text message",
+      "webhookId": "75e6aaa1-e749-41b5-aa4c-16b620f7ed93",
+      "credentials": {
+        "telegramApi": {
+          "id": "p2qJnu0BupLyffzi",
+          "name": "Telegram Myself"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "holders",
+        "chain": "={{ $fromAI('Chain', ``, 'string') }}",
+        "tokenAddress": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Token_Address', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-chainstream.chainstreamTool",
+      "typeVersion": 1,
+      "position": [
+        416,
+        48
+      ],
+      "id": "a287ab4c-62b9-4b99-bf2f-d4623d0fbdea",
+      "name": "ChainStream",
+      "credentials": {
+        "chainstreamApi": {
+          "id": "h6ZbBd3M0EirLEk3",
+          "name": "Chainstream myself"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChainStream": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b910cc16-1997-496c-8cb0-f4b41831bef1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b2445ae7c08363f5030f2bff36011ddd52d4763a552cafa646f2f14827e548cf"
+  },
+  "id": "5T5BMqotNz3HpZH9",
+  "tags": []
+}
