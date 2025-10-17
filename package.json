@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-chainstream",
-  "version": "0.0.75",
+  "version": "0.0.76",
   "description": "Chainstream nodes for n8n",
   "keywords": [
     "n8n",
@@ -63,6 +63,6 @@
     "zod": "3.24.0"
   },
   "peerDependencies": {
-    "n8n-workflow": "*"
+    "n8n-workflow": "1.113.0"
   }
 }
