@@ -1,72 +1,72 @@
-import { snakeCase } from 'change-case';
 import type {
 	IDataObject,
 	IExecuteFunctions,
 	IHookFunctions,
-	ILoadOptionsFunctions,
 	IHttpRequestMethods,
-	IRequestOptions,
-	// IRequestOptions,
+	IHttpRequestOptions,
+	ILoadOptionsFunctions,
 } from 'n8n-workflow';
 
+// 简单实现 snake_case 转换
+function toSnakeCase(input: string): string {
+    return input
+        .replace(/([a-z0-9])([A-Z])/g, '$1_$2') // camelCase → camel_Case
+        .replace(/[\s\-]+/g, '_')              // 空格/连字符 → 下划线
+        .toLowerCase();
+}
+
 export async function chainstreamApiRequest(
-	this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
-	method: IHttpRequestMethods,
-	resource: string,
-
-	body: any = {},
-	query: IDataObject = {},
-	uri?: string,
-	option: IDataObject = {},
+    this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
+    method: IHttpRequestMethods,
+    resource: string,
+    body: any = {},
+    query: IDataObject = {},
+    uri?: string,
+    option: IDataObject = {},
 ): Promise<any> {
-	const authenticationMethod = this.getNodeParameter('authentication', 0, 'apiKey') as string;
+    const credentialType = 'chainstreamApi';
+    const credentials = await this.getCredentials(credentialType);
 
-	let credentials;
-	let credentialType = 'chainstreamApi';
+    // 确保 url 一定是 string
+    const baseUrl = String((credentials as any)?.apiBaseUrl ?? '');
+    const url: string = uri !== undefined ? uri : `${baseUrl}/v1/${resource}`;
 
-	if (authenticationMethod === 'apiKey') {
-		credentialType = 'chainstreamApi';
-		credentials = await this.getCredentials(credentialType);
-	} else {
-    	credentialType = 'chainstreamApi';
-		credentials = await this.getCredentials(credentialType);    
+    const options: IHttpRequestOptions = {
+        method,
+        url,
+        qs: query,
+        body,
+        json: true,
+    };
+
+    if (Object.keys(option).length !== 0) {
+        Object.assign(options, option);
+    }
+    if (Object.keys(body as IDataObject).length === 0) {
+        delete options.body;
+    }
+    if (Object.keys(query).length === 0) {
+        delete options.qs;
     }
 
-	const options: IRequestOptions = {
-		method,
-		qs: query,
-		uri: uri || `${credentials.apiBaseUrl}/v1/${resource}`,
-		body,
-		json: true,
-	};
-
-	if (Object.keys(option).length !== 0) {
-		Object.assign(options, option);
-	}
-	if (Object.keys(body as IDataObject).length === 0) {
-		delete options.body;
-	}
-	if (Object.keys(query).length === 0) {
-		delete options.qs;
-	}
-
-	return await this.helpers.requestWithAuthentication.call(this, credentialType, options);
+    return this.helpers.httpRequestWithAuthentication.call(this, credentialType, options);
 }
 
 export function keysToSnakeCase(elements: IDataObject[] | IDataObject): IDataObject[] {
-	if (elements === undefined) {
-		return [];
-	}
-	if (!Array.isArray(elements)) {
-		elements = [elements];
-	}
-	for (const element of elements) {
-		for (const key of Object.keys(element)) {
-			if (key !== snakeCase(key)) {
-				element[snakeCase(key)] = element[key];
-				delete element[key];
-			}
-		}
-	}
-	return elements;
+    if (elements === undefined) {
+        return [];
+    }
+    if (!Array.isArray(elements)) {
+        elements = [elements];
+    }
+    for (const element of elements) {
+        for (const key of Object.keys(element)) {
+            const snake = toSnakeCase(key);
+            if (key !== snake) {
+                element[snake] = element[key];
+                delete element[key];
+            }
+        }
+    }
+    return elements;
 }

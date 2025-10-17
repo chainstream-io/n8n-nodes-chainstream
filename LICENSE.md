@@ -30,7 +30,6 @@ components and their licenses. Replace or extend this section with actual
 third-party notices used in your project.
 
 - n8n components and examples — MIT License
-- change-case — MIT License
 - zod — MIT License
 - zod-to-json-schema — MIT License
 

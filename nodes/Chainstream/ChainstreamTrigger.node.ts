@@ -158,14 +158,14 @@ export class ChainstreamTrigger implements INodeType {
 					const credentials = await this.getCredentials('chainstreamApi');
 					const options = {
 						method: 'GET' as const,
-						uri: `${credentials.apiBaseUrl}/v1/${endpoint}`,
+						url: `${credentials.apiBaseUrl}/v1/${endpoint}`,
 						headers: {
 							'Authorization': `Bearer ${credentials.sessionToken}`,
 						},
 						json: true,
 					};
 
-					const response = await this.helpers.requestWithAuthentication.call(this, 'chainstreamApi', options);
+					const response = await this.helpers.httpRequestWithAuthentication.call(this, 'chainstreamApi', options);
 					secret = response.secret;
 					webhookData.secret = secret;
 				} catch (error) {
