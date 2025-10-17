@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-chainstream",
-  "version": "0.0.69",
+  "version": "0.0.72",
   "description": "Chainstream nodes for n8n",
   "keywords": [
     "n8n",
@@ -10,14 +10,14 @@
     "workflow"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/liberfi-io/n8n-nodes-chainstream",
+  "homepage": "https://github.com/chainstream-io/n8n-nodes-chainstream",
   "author": {
     "name": "AI",
     "email": "ai@chainstream.io"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/liberfi-io/n8n-nodes-chainstream.git"
+    "url": "https://github.com/chainstream-io/n8n-nodes-chainstream.git"
   },
   "main": "dist/index.js",
   "scripts": {
