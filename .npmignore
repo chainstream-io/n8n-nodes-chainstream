@@ -4,33 +4,36 @@
 .gitignore
 
 # Source and dev files
-src
-tests
-.eslintrc
-.prettierrc
+src/
+tests/
+.vscode/
+coverage/
+node_modules/
 tsconfig.json
 jest.config.js
+.eslintrc*
+.prettierrc*
 
-# Documentation
-docs
+# Documentation (exclude all except key files)
+docs/
 *.md
 !README.md
 !LICENSE.md
+!CHANGELOG.md
+!DEVELOPER.md
+
+# Assets not needed in package
+assets/
+screenshots/
+
+# Include templates if used in runtime
+!templates/**
 
 # Misc
 .DS_Store
-.vscode
-coverage
-node_modules
 
-# Assets not needed in package
-assets
-screenshots
-
-# Include changelog, developer docs and templates in the published package
-!CHANGELOG.md
-!DEVELOPER.md
-!templates/**
-
-# If you rename LICENSE.md -> LICENSE, replace the LICENSE.md exception above with:
-# !LICENSE
+# Explicitly include key runtime folders
+!dist/**
+!nodes/**
+!credentials/**
+!package.json

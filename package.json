@@ -1,25 +1,39 @@
 {
   "name": "n8n-nodes-chainstream",
-  "version": "0.0.76",
-  "description": "Chainstream nodes for n8n",
+  "version": "0.0.77",
+  "description": "Chainstream nodes for n8n workflows",
   "keywords": [
     "n8n",
+    "n8n-node",
     "n8n-community-node",
     "chainstream",
     "automation",
-    "workflow"
+    "workflow",
+    "web3",
+    "data"
   ],
   "license": "MIT",
   "homepage": "https://github.com/chainstream-io/n8n-nodes-chainstream",
-  "author": {
-    "name": "AI",
-    "email": "ai@chainstream.io"
+  "bugs": {
+    "url": "https://github.com/chainstream-io/n8n-nodes-chainstream/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/chainstream-io/n8n-nodes-chainstream.git"
   },
+  "author": {
+    "name": "Chainstream Team",
+    "email": "dev@chainstream.io"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "nodes",
+    "credentials"
+  ],
   "scripts": {
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
@@ -29,9 +43,6 @@
     "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json",
     "test": "jest"
   },
-  "files": [
-    "dist"
-  ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
