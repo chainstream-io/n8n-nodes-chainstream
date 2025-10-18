@@ -1,6 +1,6 @@
-**Version:** 0.0.79  
+**Version:** 0.0.80  
 **Status:** Submitted to Creator Portal, awaiting approval  
-**Compatible with:** n8n v1.113.0+
+**Compatible with:** n8n v1.0.0+ (tested on v1.113.0)
 
 # n8n-nodes-chainstream
 
