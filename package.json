@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-chainstream",
-  "version": "0.0.86",
+  "version": "0.0.88",
   "description": "Chainstream nodes for n8n workflows",
   "keywords": [
     "n8n",
@@ -34,13 +34,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && gulp build:icons",
+    "build": "tsc && node scripts/generate-schema.js && gulp build:icons",
     "lint": "eslint nodes credentials",
     "test": "jest --passWithNoTests",
     "precheck": "pnpm exec n8n-node prerelease",
     "pack": "pnpm pack",
     "pack:check": "node scripts/pack-check.js",
-    "release": "pnpm run build && pnpm run lint && pnpm run test && pnpm run precheck || true && pnpm pack"
+    "release": "pnpm run build && pnpm run lint && pnpm run test && pnpm run precheck && pnpm pack"
   },
   "n8n": {
     "n8nNodesApiVersion": 1,
@@ -64,11 +64,12 @@
     "jest": "^29.7.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
-    "typescript": "^5.6.3"
-  },
-  "dependencies": {
+    "typescript": "^5.6.3",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.6"
+  },
+  "dependencies": {
+
   },
   "peerDependencies": {
     "n8n-core": "*",
