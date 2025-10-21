@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-chainstream",
-  "version": "0.0.81",
+  "version": "0.0.82",
   "description": "Chainstream nodes for n8n workflows",
   "keywords": [
     "n8n",
@@ -29,7 +29,7 @@
   "engines": {
     "node": ">=18.10"
   },
-  "main": "dist/index.js",
+  "main": "index.js",
   "files": [
     "dist"
   ],
@@ -37,10 +37,11 @@
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
-    "lint": "eslint nodes credentials",
-    "lintfix": "eslint nodes credentials --fix",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
     "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "precheck": "npm run build && npm run lint && npm run test"
   },
   "n8n": {
     "n8nNodesApiVersion": 1,
@@ -70,9 +71,12 @@
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.6"
   },
-
   "peerDependencies": {
-    "n8n-core": "*",
-    "n8n-workflow": "*"
+    "n8n-core": ">=1.0.0 <2.0.0",
+    "n8n-workflow": ">=1.0.0 <2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
+
