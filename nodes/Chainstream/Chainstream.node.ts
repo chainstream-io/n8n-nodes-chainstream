@@ -19,11 +19,11 @@ export function getChainId(this: IExecuteFunctions | ILoadOptionsFunctions, inde
     [/chain/i, /network/i, /blockchain/i, /chain_name/i, /name/i]
   ];
 
-  const result = fuzzyFindParameter(this, index, searchPatterns, 'chain ID');
+  const result = fuzzyFindParameter(this, index, searchPatterns);
   if (!result) {
     throw new NodeOperationError(
       this.getNode(),
-      `Could not find chain ID parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+      `Could not find chain ID parameter.`
     );
   }
 
@@ -37,11 +37,11 @@ export function getTokenAddress(this: IExecuteFunctions | ILoadOptionsFunctions,
     [/token/i, /address/i, /contract/i]
   ];
 
-  const result = fuzzyFindParameter(this, index, searchPatterns, 'token address');
+  const result = fuzzyFindParameter(this, index, searchPatterns);
   if (!result) {
     throw new NodeOperationError(
       this.getNode(),
-      `Could not find token address parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+      `Could not find token address parameter.`
     );
   }
   return result;
@@ -53,11 +53,11 @@ export function getWalletAddress(this: IExecuteFunctions | ILoadOptionsFunctions
 		[/wallet/i]
   ];
 
-  const result = fuzzyFindParameter(this, index, searchPatterns, 'wallet address');
+  const result = fuzzyFindParameter(this, index, searchPatterns);
   if (!result) {
     throw new NodeOperationError(
       this.getNode(),
-      `Could not find wallet address parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+      `Could not find wallet address parameter.`
     );
   }
   return result;
@@ -73,7 +73,7 @@ export function getStartTimestamp(this: IExecuteFunctions | ILoadOptionsFunction
   if (!result) {
     throw new NodeOperationError(
       this.getNode(),
-      `Could not find token address parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+      `Could not find token address parameter.`
     );
   }
   return result;
@@ -89,7 +89,7 @@ export function getEndTimestamp(this: IExecuteFunctions | ILoadOptionsFunctions,
 	if (!result) {
 		throw new NodeOperationError(
 			this.getNode(),
-			`Could not find token address parameter. Tried patterns: ${JSON.stringify(searchPatterns)}. Available parameters: ${getAvailableParams(this)}`
+			`Could not find token address parameter.`
 		);
 	}
 	return result;
@@ -99,34 +99,28 @@ export function fuzzyFindParameter(
   context: IExecuteFunctions | ILoadOptionsFunctions,
   index: number,
   searchPatterns: (string | RegExp)[][],
-  parameterType: string
 ): string | null {
+  const nodeParameters = context.getNode().parameters ?? {};
+
+  const tryGetValue = (paramName: string): string | null => {
+    try {
+      const value = context.getNodeParameter(paramName, index, undefined) as string | undefined;
+      return value && value.trim() ? value.trim() : null;
+    } catch {
+      return null;
+    }
+  };
+
   for (const patternGroup of searchPatterns) {
     for (const pattern of patternGroup) {
       if (typeof pattern === 'string') {
-        try {
-          const value = context.getNodeParameter(pattern, index, undefined) as string | undefined;
-          if (value && typeof value === 'string' && value.trim()) {
-            return value.trim();
-          }
-        } catch (error) {
-        }
+        const value = tryGetValue(pattern);
+        if (value) return value;
       } else {
-        const nodeParameters = context.getNode().parameters;
-        if (nodeParameters) {
-          const matchedParam = Object.keys(nodeParameters).find(paramName =>
-            pattern.test(paramName)
-          );
-
-          if (matchedParam) {
-            try {
-              const value = context.getNodeParameter(matchedParam, index, undefined) as string | undefined;
-              if (value && typeof value === 'string' && value.trim()) {
-                return value.trim();
-              }
-            } catch (error) {
-            }
-          }
+        const matched = Object.keys(nodeParameters).find((name) => pattern.test(name));
+        if (matched) {
+          const value = tryGetValue(matched);
+          if (value) return value;
         }
       }
     }
@@ -134,6 +128,7 @@ export function fuzzyFindParameter(
 
   return null;
 }
+
 
 export function fuzzyFindParameterAsInt(
   context: IExecuteFunctions | ILoadOptionsFunctions,
@@ -378,11 +373,11 @@ export class Chainstream implements INodeType {
 
 					const resourceHandlers = handlers[resource];
 					if (!resourceHandlers) {
-							throw new NodeOperationError(this.getNode(), `Unsupported resource: ${resource}`);
+							throw new NodeOperationError(this.getNode(), `Unsupported resource.`);
 					}
 					const opHandler = resourceHandlers[operation];
 					if (!opHandler) {
-						throw new NodeOperationError(this.getNode(), `Unsupported operation for resource ${resource}: ${operation}`);
+						throw new NodeOperationError(this.getNode(), `Unsupported operation for resource`);
 					}
 
 					return opHandler();

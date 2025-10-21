@@ -82,11 +82,10 @@ export class ChainstreamApi implements ICredentialType {
 					'Content-Type': 'application/json',
 				},
 			})) as { access_token: string };
-			return { sessionToken: access_token };	
+			return { sessionToken: access_token };
 		} catch(error) {
-			return { error }
+			return { error: (error as Error).message };
 		}
-		
 	}
 
 	authenticate: IAuthenticateGeneric = {

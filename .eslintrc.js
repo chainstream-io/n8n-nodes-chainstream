@@ -51,5 +51,11 @@ module.exports = {
         'n8n-nodes-base/node-class-description-outputs-wrong': 'off',
       },
     },
+		{
+      "files": ["scripts/*.js"],
+      "parserOptions": {
+        "project": null
+      }
+    }
   ],
 };
