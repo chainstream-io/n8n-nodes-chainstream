@@ -20,7 +20,7 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "outDir": "./dist/",
-    "types": [ "jest"]
+    "types": ["jest"]
   },
   "include": [
     "credentials/**/*.ts",

@@ -6,7 +6,6 @@ import {
 	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
-	NodeConnectionType,
 	NodeOperationError,
 } from 'n8n-workflow';
 import { chainstreamApiRequest } from './GenericFunctions';
@@ -220,8 +219,8 @@ export class Chainstream implements INodeType {
 		defaults: {
 			name: 'Chainstream',
 		},
-		inputs: [{ type: NodeConnectionType.Main }],
-		outputs: [{ type: NodeConnectionType.Main }],
+		inputs: [{ type: 'main' }],
+		outputs: [{ type: 'main' }],
 		usableAsTool: true,
 		credentials: [
 			{

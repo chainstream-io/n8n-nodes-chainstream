@@ -6,7 +6,6 @@ import {
 	type INodeTypeDescription,
 	type IWebhookFunctions,
 	type IWebhookResponseData,
-	NodeConnectionType,
 } from 'n8n-workflow';
 import { chainstreamApiRequest } from './GenericFunctions';
 
@@ -24,7 +23,7 @@ export class ChainstreamTrigger implements INodeType {
 			name: 'Chainstream Trigger',
 		},
 		inputs: [],
-		outputs: [NodeConnectionType.Main],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'chainstreamApi',
