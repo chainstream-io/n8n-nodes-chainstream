@@ -25,7 +25,10 @@
   "include": [
     "credentials/**/*.ts",
     "nodes/**/*.ts",
-    "__tests__/**/*.ts",
-		"scripts/**/*.ts"
+    "__tests__/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "scripts"
   ]
 }

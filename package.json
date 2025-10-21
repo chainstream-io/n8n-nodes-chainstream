@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-chainstream",
-  "version": "0.0.89",
+  "version": "0.0.90",
   "description": "Chainstream nodes for n8n workflows",
   "keywords": [
     "n8n",
