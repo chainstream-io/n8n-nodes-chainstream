@@ -1,4 +1,4 @@
-**Version:** 0.0.82
+**Version:** 0.0.83
 **Status:** Submitted to Creator Portal, awaiting approval  
 **Compatible with:** n8n v1.0.0+ (tested on v1.113.0)
 
