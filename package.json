@@ -64,7 +64,7 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "typescript": "~5.8.3",
-    "n8n-core": "^1.11.1",
+    "n8n-core": "^1.115.0",
     "n8n-workflow": "^1.70.0"
   },
   "dependencies": {
