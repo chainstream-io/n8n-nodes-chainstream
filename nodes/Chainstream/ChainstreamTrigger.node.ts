@@ -93,7 +93,6 @@ export class ChainstreamTrigger implements INodeType {
 				const endpoint = 'webhook/endpoint';
 
 				const res = await chainstreamApiRequest.call(this, 'GET', endpoint);
-				this.logger.debug('Chainstream node start checkExists method', { res });
 				for (const webhook of res.data) {
 					if (webhook.url === webhookUrl) {
 						webhookData.webhookId = webhook.id;
@@ -113,10 +112,7 @@ export class ChainstreamTrigger implements INodeType {
 					// format: 'json',
 				};
 
-				this.logger.debug('Chainstream node start create method', { body });
 				const responseData = await chainstreamApiRequest.call(this, 'POST', endpoint, body);
-				this.logger.debug('Chainstream node execute create method return result', { responseData });
-
 				if (responseData === undefined || responseData.id === undefined) {
 					// Required data is missing so was not successful
 					return false;
@@ -129,11 +125,9 @@ export class ChainstreamTrigger implements INodeType {
 				const webhookData = this.getWorkflowStaticData('node');
 				if (webhookData.webhookId !== undefined) {
 					const endpoint = `webhook/endpoint/${webhookData.webhookId}`;
-					this.logger.debug('Chainstream node start delete method', { endpoint });
 					try {
 						await chainstreamApiRequest.call(this, 'DELETE', endpoint, {});
 					} catch (error) {
-						this.logger.error('Chainstream node execute delete method error', { error });
 						return false;
 					}
 					delete webhookData.webhookId;
@@ -168,7 +162,6 @@ export class ChainstreamTrigger implements INodeType {
 					secret = response.secret;
 					webhookData.secret = secret;
 				} catch (error) {
-					this.logger.warn('Failed to get webhook secret, proceeding without signature verification', { error });
 					return {
 						workflowData: [this.helpers.returnJsonArray(req.body as IDataObject)],
 					};
@@ -192,7 +185,6 @@ export class ChainstreamTrigger implements INodeType {
 				const isValidSignature = signatures.some(sig => sig === computedSignature);
 
 				if (!isValidSignature) {
-					this.logger.warn('Webhook signature verification failed');
 					return {};
 				}
 
@@ -201,20 +193,16 @@ export class ChainstreamTrigger implements INodeType {
 				const timeDiff = Math.abs(currentTime - timestamp);
 
 				if (timeDiff > 300) {
-					this.logger.warn('Webhook timestamp too old', { timeDiff });
 					return {};
 				}
 			} else {
-				this.logger.warn('No signature header found in webhook request');
 				return {};
 			}
 
-			this.logger.debug('Webhook signature verified successfully');
 			return {
 				workflowData: [this.helpers.returnJsonArray(req.body as IDataObject)],
 			};
 		} catch (error) {
-			this.logger.error('Webhook verification failed', { error });
 			return {};
 		}
 	}

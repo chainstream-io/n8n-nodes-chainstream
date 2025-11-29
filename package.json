@@ -37,7 +37,6 @@
     "build": "tsc && node scripts/generate-schema.js && gulp build:icons",
     "lint": "eslint nodes credentials",
     "test": "jest --passWithNoTests",
-    "precheck": "pnpm exec n8n-node prerelease",
     "pack": "pnpm pack",
     "pack:check": "node scripts/pack-check.js",
     "release": "pnpm run build && pnpm run lint && pnpm run test && pnpm run precheck && pnpm pack"
@@ -70,15 +69,9 @@
     "zod-to-json-schema": "^3.24.6"
   },
   "peerDependencies": {
-    "n8n-core": "*",
     "n8n-workflow": "*"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "pnpm": {
-    "overrides": {
-      "change-case": "4.1.2"
-    }
   }
 }

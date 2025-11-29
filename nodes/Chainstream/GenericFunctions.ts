@@ -7,11 +7,10 @@ import type {
 	ILoadOptionsFunctions,
 } from 'n8n-workflow';
 
-// 简单实现 snake_case 转换
 function toSnakeCase(input: string): string {
     return input
         .replace(/([a-z0-9])([A-Z])/g, '$1_$2') // camelCase → camel_Case
-        .replace(/[\s\-]+/g, '_')              // 空格/连字符 → 下划线
+        .replace(/[\s\-]+/g, '_')
         .toLowerCase();
 }
 
@@ -27,7 +26,6 @@ export async function chainstreamApiRequest(
     const credentialType = 'chainstreamApi';
     const credentials = await this.getCredentials(credentialType);
 
-    // 确保 url 一定是 string
     const baseUrl = String((credentials as any)?.apiBaseUrl ?? '');
     const url: string = uri !== undefined ? uri : `${baseUrl}/v1/${resource}`;
 
